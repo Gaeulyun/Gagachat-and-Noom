@@ -1,0 +1,9 @@
+{
+    "name": "nodes",
+    "version": "1.0.0",
+    "description": "Zoom Clone using WEbRTC and WEbsockets",
+    "license": "MIT",
+    "devDependencies": {
+        "nodemon": "^2.0.19"
+    }
+}
