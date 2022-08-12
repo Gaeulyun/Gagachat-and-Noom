@@ -20,14 +20,15 @@ function handleConnection(socket) {
 
 const sockets = [];
 
-wss.on("connection", (socket) => {
+wss.on('connection', (socket) => {
     sockets.push(socket);
-    console.log("Connected to Browser ✔");
-    socket.on("close", () => console.log("Disconnected from the Browser ❌"));
+    console.log('connected to Browser');
+    socket.on('close', () => console.log('disconnected from browser'));
+    
     socket.on('message', (message) => {
-        const messageString = message.toString('utf8');
-        socket.send(messageString);
-        });
+    sockets.forEach((aSockets) => aSockets.send(message.toString()));
+    });
 });
 
 server.listen(3000, handleListen);
+
