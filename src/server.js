@@ -3,7 +3,6 @@ import SocketIO from "socket.io";
 import express from "express";
 
 const app = express();
-
 app.set("view engine", "pug");
 app.set("views", __dirname + "/views");
 app.use("/public", express.static(__dirname + "/public"));
@@ -14,8 +13,14 @@ const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer);
 
 wsServer.on("connection", (socket) => {
-    console.log(socket);
-});
+   socket.on("enter_room", (msg, done) => {
+    console.log(msg);
+    setTimeout(() => {
+      done();
+    }, 10000);
+   });
+  });
+
 
 // const sockets = [];
 // const wss = new WebSocketServer({ server });
@@ -39,3 +44,4 @@ wsServer.on("connection", (socket) => {
 
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
 httpServer.listen(3000, handleListen);
+
