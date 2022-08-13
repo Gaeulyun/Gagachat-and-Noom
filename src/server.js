@@ -14,34 +14,41 @@ const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer);
 
 function publicRooms(){
-  const{
+  //return 오픈채팅방들의 정보
+  const {
     sockets: {
-      adapter: {sides, rooms },
+      adapter: { sids, rooms },
     },
   } = wsServer;
   const publicRooms = [];
   rooms.forEach((_, key) => {
-    if(sides.get(key) === undefined){
+    if (sids.get(key) === undefined) {
       publicRooms.push(key);
     }
   });
   return publicRooms;
 }
 
+function countRoom(roomName) {
+  //return 룸 내의 유저수
+  return wsServer.sockets.adapter.rooms.get(roomName)?.size;
+}
+
 wsServer.on("connection", (socket) => {
   socket["nickname"] = "Anon";
   socket.onAny((event) => {
+    //socket의 모든 이벤트에 접근
     console.log(`Socket Event: ${event}`);
   });
   socket.on("enter_room", (roomName, done) => {
     socket.join(roomName);
     done();
-    socket.to(roomName).emit("welcome", socket.nickname);
+    socket.to(roomName).emit("welcome", socket.nickname, countRoom(roomName));
     wsServer.sockets.emit("room_change", publicRooms());
   });
   socket.on("disconnecting", () => {
     socket.rooms.forEach((room) =>
-      socket.to(room).emit("bye", socket.nickname)
+    socket.to(room).emit("bye", socket.nickname, countRoom(room) - 1)
     );
   });
   socket.on("disconnect", () => {
